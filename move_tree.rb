@@ -4,24 +4,25 @@ class MoveTree
 
   # use 0,0 as top-left square
   def initialize(start_coords, max_depth)
+    @max_depth = max_depth
     # define basic knight movement possibilities
     @movements = knight_movement
 
     # create starting square
-    starting_square = Square.new(start_coords[0], start_coords[1], 0, nil)
+    @root = Square.new(start_coords[0], start_coords[1], 0, nil)
+    @node_count = 1
 
     # create starting build_queue
-    @build_queue = [starting_square]
+    @build_queue = [@root]
     depth_counter = 1
 
 
-    while depth_counter <= max_depth do
+    while depth_counter <= @max_depth do
 
       # run through current queue prior to updating depth_counter
       @build_queue.size.times do
 
         square = @build_queue.shift
-        puts "Getting #{square}..."
         spawn_children(square)
 
       end
@@ -32,6 +33,10 @@ class MoveTree
 
   end
 
+  # Pry appears to automatically run #inspect after #initialize?
+  def inspect
+    puts "Your tree has #{@node_count} nodes and a max depth of #{@max_depth}."
+  end
 
 
   private
@@ -71,19 +76,14 @@ class MoveTree
 
     square.children = []
 
-    puts "Building children for #{square}..."
     moves = check_moves(square.x, square.y)
     moves.each do |move|
       child = Square.new(move[0], move[1], nil, nil)
       square.children << child
       @build_queue.push(child)
-      puts "Child built."
+      @node_count += 1
     end
 
   end
-
-  #def create_child(parent, child_x, child_y)
-  #  Struct.new(child_x, child_y, nil, parent)
-  #end
 
 end
